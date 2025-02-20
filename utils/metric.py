@@ -1,4 +1,5 @@
 import torch
+from torchmetrics import MeanAbsoluteError
 import numpy as np
 from sklearn.metrics import average_precision_score
 
@@ -7,6 +8,8 @@ def get_metric_fn(cfg):
         return batch_accuracy
     if cfg.Train.metric == "average-precision":
         return eval_ap
+    if cfg.Train.metric == "mae":
+        return MeanAbsoluteError().to(cfg.Device)
     
 def eval_ap(y_pred,y_true):
     """ Code taken form LRGB repo. 

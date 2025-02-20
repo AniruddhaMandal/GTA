@@ -44,7 +44,7 @@ def config_logger(cfg,model,loss_fn,metric_fn,optimizer,scheduler,device):
     training_text.append("Loss:\n",style="blue underline")
     training_text.append(f" {loss_fn}\n",style="blue")
     training_text.append("Metric:\n",style="red underline")
-    training_text.append(f" {metric_fn.__name__}\n", style="red")
+    training_text.append(f" {cfg.Train.metric}\n", style="red")
     training_text.append(f"Scheduler:\n",style="underline")
     training_text.append(f" {scheduler.__class__.__name__}\n")
     training_text.append(f" mode->{cfg.Scheduler.mode}\n")

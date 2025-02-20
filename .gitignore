@@ -1,0 +1,12 @@
+__pycache__/
+Dataset/
+Results/
+.temp/
+result**/
+**.pt
+fakecfg.yaml
+note.txt
+delme.py
+.vscode
+docs/build
+delme/

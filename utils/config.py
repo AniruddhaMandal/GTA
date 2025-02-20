@@ -56,8 +56,10 @@ def set_config(cfg, args):
     m = now.strftime("%M")
     h = now.strftime("%H")
     uid = f"{dd}.{mm}-{s}:{m}:{h}" 
-    if(cfg.Model.framework == "message-passing-lstm"):
-        framework_name = "MPLSTM"
+
+    # Add custom models here:
+    if(cfg.Model.framework == "NONE"):
+        framework_name = "NONE"
     elif(cfg.Model.framework == "vanilla"):
         framework_name = "VANILLA"
     else: 

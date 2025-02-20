@@ -1,5 +1,4 @@
-# MessagePassingLSTM
-![GraphLSTM](./img/GraphLSTM.svg)
+# GTA: Graph Training Architecture
 
 ## Install 
 ```bash

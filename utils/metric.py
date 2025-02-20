@@ -1,5 +1,6 @@
 import torch
 from torchmetrics import MeanAbsoluteError
+from torchmetrics.functional.retrieval import retrieval_reciprocal_rank
 import numpy as np
 from sklearn.metrics import average_precision_score
 
@@ -10,6 +11,8 @@ def get_metric_fn(cfg):
         return eval_ap
     if cfg.Train.metric == "mae":
         return MeanAbsoluteError().to(cfg.Device)
+    if cfg.Train.metric == "mrr":
+        return retrieval_reciprocal_rank
     
 def eval_ap(y_pred,y_true):
     """ Code taken form LRGB repo. 

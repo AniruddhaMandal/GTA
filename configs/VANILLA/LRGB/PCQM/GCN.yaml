@@ -1,8 +1,8 @@
 Data:
   batch_size: 128
   input_dim: 9
-  name: Peptides-struct
-  output_dim: 11
+  name: PCQM-Contact
+  output_dim: 1
   train_frac: 0.8
   val_frac: 0.1
 Device: cuda
@@ -28,6 +28,6 @@ Scheduler:
   name: reduce_lr_on_plateau
   reduce_factor: 0.5
 Train:
-  loss_fn: l1
+  loss_fn: cross-entropy
   max_epoches: 500
-  metric: mae
+  metric: mrr

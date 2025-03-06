@@ -1,3 +1,4 @@
+import logging
 import warnings
 import torch
 import argparse
@@ -5,6 +6,7 @@ import numpy as np
 from utils.config import load_config, set_config, str2bool
 from utils.experiment import Experiment
 
+logging.basicConfig(level=logging.ERROR)
 warnings.filterwarnings('ignore',category=FutureWarning)
 warnings.filterwarnings('ignore',category=Warning)
 def set_random_seed(seed,gpu=True):

@@ -1,5 +1,8 @@
+from functools import partial
+
 import torch
 from torchmetrics import MeanAbsoluteError
+from torcheval.metrics.functional import multiclass_f1_score
 from torchmetrics.functional.retrieval import retrieval_reciprocal_rank
 import numpy as np
 from sklearn.metrics import average_precision_score
@@ -13,6 +16,8 @@ def get_metric_fn(cfg):
         return MeanAbsoluteError().to(cfg.Device)
     if cfg.Train.metric == "mrr":
         return retrieval_reciprocal_rank
+    if cfg.Train.metric == "macro-multiclass-f1":
+        return partial(multiclass_f1_score, num_classes=cfg.Data.output_dim, average="macro")
     
 def eval_ap(y_pred,y_true):
     """ Code taken form LRGB repo. 

@@ -10,6 +10,7 @@ def build_model(cfg):
     dropout_frac = cfg.Model.dropout_frac
     type = cfg.Model.type
     encoder = cfg.Model.encoder
+    graph_pooling = cfg.Model.graph_pooling 
 
     # Add Models Here
     if(cfg.Model.framework == "vanilla"):
@@ -19,4 +20,5 @@ def build_model(cfg):
                        hops=hops,
                        dropout=dropout_frac,
                        type=type,
-                       encoder=encoder)
+                       encoder=encoder,
+                       graph_pooling=graph_pooling)

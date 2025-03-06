@@ -6,7 +6,7 @@ from torch_geometric.graphgym.models.encoder import AtomEncoder
 from utils.encoder import LinearEncoder
 
 class Vanilla(nn.Module):
-    def __init__(self, in_dim, out_dim, hidden_dim, hops, dropout, type, encoder=None, *args, **kwargs):
+    def __init__(self, in_dim, out_dim, hidden_dim, hops, dropout, type, encoder=None,graph_pooling="mean", *args, **kwargs):
         super(Vanilla, self).__init__(*args, **kwargs)
 
         self.in_dim = in_dim
@@ -15,6 +15,7 @@ class Vanilla(nn.Module):
         self.hops = hops
         self.dropout = dropout
         self.type = type
+        self.graph_pooling = graph_pooling
 
 
         if(encoder == "Atom"):
@@ -49,6 +50,8 @@ class Vanilla(nn.Module):
                 x = F.relu(x)
                 x = F.dropout(x, self.dropout, training=self.training)
         y_pred = self.cls_layer(x)
-        y_pred = pygn.global_mean_pool(y_pred, batch.batch)
+        if self.graph_pooling == "mean":
+            y_pred = pygn.global_mean_pool(y_pred, batch.batch)
+
 
         return y_pred

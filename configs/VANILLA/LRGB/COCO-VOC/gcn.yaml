@@ -1,0 +1,33 @@
+Data:
+  batch_size: 128
+  input_dim: 14
+  name: COCO-SP
+  output_dim: 21
+  train_frac: 0.8
+  val_frac: 0.1
+Device: cuda
+Model:
+  dropout_frac: 0.0
+  encoder: None
+  framework: vanilla
+  graph_pooling: None
+  hidden_dim: 220
+  hops: 8 
+  type: GCN
+Optimizer:
+  eval_after_epoch: 2
+  learning_rate: 0.001
+  lr_decay_factor: 0.8
+  min_lr: 1e-5
+  reduce_factor: 0.5
+  schedule_patience: 20
+  type: AdamW
+  weight_decay: 0.0
+Scheduler:
+  mode: min
+  name: reduce_lr_on_plateau
+  reduce_factor: 0.5
+Train:
+  loss_fn: weighted-cross-entropy
+  max_epoches: 500
+  metric: macro-multiclass-f1

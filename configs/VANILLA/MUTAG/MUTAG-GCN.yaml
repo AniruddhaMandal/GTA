@@ -12,6 +12,7 @@ Model:
   framework: vanilla
   hidden_dim: 64
   hops: 4
+  graph_pooling: mean
   type: GCN
 Optimizer:
   eval_after_epoch: 2

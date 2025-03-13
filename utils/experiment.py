@@ -87,7 +87,8 @@ class Experiment():
             if(cfg.log and (exp_i == 0)):
                 config_logger(cfg,model,loss_fn,metric_fn,optimizer,scheduler,device)
             train_loss_history = []
-            optimal_model_loss = math.inf
+            optimal_model_acc = 0
+            optimal_model_mae = 1
 
             pbar = Progress(
                 TextColumn("[progress.description]{task.description}"),
@@ -109,9 +110,14 @@ class Experiment():
                 train_loss_history.append(train_loss.item())
                 val_loss, val_acc = test_epoch(model, val_loader, loss_fn, metric_fn, device)
 
-                if(optimal_model_loss>val_loss):
-                    optimal_model_loss = val_loss
-                    torch.save(model,f"{cfg.outdir_path}/optimal_model.pt")
+                if cfg.Train.metric in ["mae"]:
+                    if(optimal_model_mae > val_acc):
+                        optimal_model_mae = val_acc
+                        torch.save(model,f"{cfg.outdir_path}/optimal_model.pt")
+                else:
+                    if(optimal_model_acc<val_acc):
+                        optimal_model_acc = val_acc
+                        torch.save(model,f"{cfg.outdir_path}/optimal_model.pt")
                 pbar.update(task,advance=1,
                             train_loss=f"{train_loss.item():.6f}",
                             val_acc=f"{val_acc.item()*100: .2f}%")

@@ -10,3 +10,5 @@ delme.py
 .vscode
 docs/build
 delme/
+.ipynb_checkpoints/
+delme.ipynb

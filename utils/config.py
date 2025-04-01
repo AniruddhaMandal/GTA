@@ -44,6 +44,15 @@ def set_config(cfg, args):
         cfg.Model.dropout_frac = args.dropout
     if(args.type != None):
         cfg.Model.type = args.type
+    if(hasattr(cfg.Model, "task") != True):
+        cfg.Model.task = None
+    if cfg.Model.task == "inductive_edge":
+        try:
+            cfg.Model.edge_encoder = cfg.Model.edge_encoder
+        except:
+            raise ValueError(f"Provide cfg.Model.edge_encoder for `inductive_edge` task.")
+    else:
+        cfg.Model.edge_encoder = None
 
     # type casting 
     cfg.Optimizer.weight_decay = float(cfg.Optimizer.weight_decay)

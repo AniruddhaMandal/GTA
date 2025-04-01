@@ -2,7 +2,7 @@ Data:
   batch_size: 128
   input_dim: 14
   name: COCO-SP
-  output_dim: 21
+  output_dim: 81
   train_frac: 0.8
   val_frac: 0.1
 Device: cuda

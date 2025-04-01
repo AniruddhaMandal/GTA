@@ -11,6 +11,7 @@ def build_model(cfg):
     type = cfg.Model.type
     encoder = cfg.Model.encoder
     graph_pooling = cfg.Model.graph_pooling 
+    edge_encoder = cfg.Model.edge_encoder
 
     # Add Models Here
     if(cfg.Model.framework == "vanilla"):
@@ -21,4 +22,5 @@ def build_model(cfg):
                        dropout=dropout_frac,
                        type=type,
                        encoder=encoder,
-                       graph_pooling=graph_pooling)
+                       graph_pooling=graph_pooling,
+                       edge_encoder=edge_encoder)

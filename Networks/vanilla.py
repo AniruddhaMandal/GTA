@@ -4,9 +4,10 @@ import torch.nn.functional as F
 import torch_geometric.nn as pygn
 from torch_geometric.graphgym.models.encoder import AtomEncoder
 from utils.encoder import LinearEncoder
+from Networks.gnn_heads import InductiveEdge
 
 class Vanilla(nn.Module):
-    def __init__(self, in_dim, out_dim, hidden_dim, hops, dropout, type, encoder=None,graph_pooling="mean", *args, **kwargs):
+    def __init__(self, in_dim, out_dim, hidden_dim, hops, dropout, type, encoder=None,graph_pooling="mean", edge_encoder=None, *args, **kwargs):
         super(Vanilla, self).__init__(*args, **kwargs)
 
         self.in_dim = in_dim
@@ -16,6 +17,7 @@ class Vanilla(nn.Module):
         self.dropout = dropout
         self.type = type
         self.graph_pooling = graph_pooling
+        self.edge_encoder = edge_encoder
 
 
         if(encoder == "Atom"):
@@ -38,8 +40,10 @@ class Vanilla(nn.Module):
                 self.mp_layers.append(pygn.GraphSAGE(self.hidden_dim,self.hidden_dim,num_layers=1))
             if self.type == "RGGC":
                 self.mp_layers.append(pygn.ResGatedGraphConv(self.hidden_dim, self.hidden_dim))
-
+        if(edge_encoder != None):
+            self.head = InductiveEdge(self.hidden_dim, 1, edge_decoder=self.edge_encoder)
         self.cls_layer = nn.Linear(self.hidden_dim, self.out_dim)
+
     def forward(self, batch):
         batch = self.input_layer(batch)
         x, edge_index = batch.x, batch.edge_index
@@ -49,9 +53,17 @@ class Vanilla(nn.Module):
             if i!=(self.hops-1):
                 x = F.relu(x)
                 x = F.dropout(x, self.dropout, training=self.training)
-        y_pred = self.cls_layer(x)
-        if self.graph_pooling == "mean":
-            y_pred = pygn.global_mean_pool(y_pred, batch.batch)
-
-
+        batch.x = x
+        if self.edge_encoder != None:
+            y_pred = self.head(batch)
+        else:
+            y_pred = self.cls_layer(batch.x)
+            if self.graph_pooling == "mean":
+                y_pred = pygn.global_mean_pool(y_pred, batch.batch)
+            elif self.graph_pooling == "max":
+                y_pred = pygn.global_max_pool(y_pred, batch.batch)
+            elif self.graph_pooling == "None":
+                return y_pred
+            else:
+                raise ValueError(f"Unknown pooling({self.graph_pooling}) used")
         return y_pred

@@ -83,6 +83,7 @@ class Experiment():
             optimizer = build_optimizer(cfg, model)
             scheduler = get_scheduler(optimizer,cfg)
             device = cfg.Device
+            model_task = cfg.Model.task
 
             if(cfg.log and (exp_i == 0)):
                 config_logger(cfg,model,loss_fn,metric_fn,optimizer,scheduler,device)
@@ -106,9 +107,13 @@ class Experiment():
             model.to(device)
             start_time = time.perf_counter()
             for i in range(cfg.Train.max_epoches):    
-                train_loss, train_acc = train_epoch(model,train_loader,loss_fn,metric_fn,optimizer,scheduler,device)
-                train_loss_history.append(train_loss.item())
-                val_loss, val_acc = test_epoch(model, val_loader, loss_fn, metric_fn, device)
+                train_loss, train_acc = train_epoch(model,train_loader,loss_fn,metric_fn,optimizer,scheduler,device, model_task)
+                train_loss_history.append(train_loss)
+                val_loss, val_acc = test_epoch(model, val_loader, loss_fn, metric_fn, device, model_task)
+                if model_task == "inductive_edge":
+                    status = val_acc
+                    val_acc = status['mrr']
+
 
                 if cfg.Train.metric in ["mae"]:
                     if(optimal_model_mae > val_acc):
@@ -119,16 +124,19 @@ class Experiment():
                         optimal_model_acc = val_acc
                         torch.save(model,f"{cfg.outdir_path}/optimal_model.pt")
                 pbar.update(task,advance=1,
-                            train_loss=f"{train_loss.item():.6f}",
-                            val_acc=f"{val_acc.item()*100: .2f}%")
+                            train_loss=f"{train_loss:.6f}",
+                            val_acc=f"{val_acc*100: .2f}%")
             pbar.stop()
             del model 
 
             optimal_model = torch.load(f"{cfg.outdir_path}/optimal_model.pt")
-            opt_loss, opt_acc = test_epoch(optimal_model,test_loader,loss_fn,metric_fn,device)
+            opt_loss, opt_acc = test_epoch(optimal_model,test_loader,loss_fn,metric_fn, device, model_task)
+            if model_task == "inductive_edge":
+                print(opt_acc)
+                opt_acc = opt_acc['mrr']
             del optimal_model
 
-            experiment_acc_history.append(opt_acc.item())
+            experiment_acc_history.append(opt_acc)
             end_time = time.perf_counter()
             if(cfg.log):
                 uniplot.plot(train_loss_history, 
@@ -136,7 +144,7 @@ class Experiment():
                                 color='blue',
                                 title=f"Train Loss History {cfg.Data.name} {cfg.Model.type}",
                                 character_set='braille')
-                perf_logger.add_perf(exp_i, opt_loss.item(), opt_acc.item(),time=(end_time-start_time)) 
+                perf_logger.add_perf(exp_i, opt_loss, opt_acc,time=(end_time-start_time)) 
                 perf_logger.print()
         
         print(f"Experiment Acc: {np.mean(experiment_acc_history)*100: 0.2f}",

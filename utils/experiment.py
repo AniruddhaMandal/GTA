@@ -123,9 +123,11 @@ class Experiment():
                     if(optimal_model_acc<val_acc):
                         optimal_model_acc = val_acc
                         torch.save(model,f"{cfg.outdir_path}/optimal_model.pt")
+                if cfg.Train.metric == "accuracy":
+                    val_acc = val_acc*100
                 pbar.update(task,advance=1,
                             train_loss=f"{train_loss:.6f}",
-                            val_acc=f"{val_acc*100: .2f}%")
+                            val_acc=f"{val_acc: .2f}")
             pbar.stop()
             del model 
 
